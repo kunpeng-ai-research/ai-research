@@ -1,0 +1,508 @@
+---
+title: "OpenClaw 完整入门指南：5分钟搭建你的个人AI助手"
+description: "本文手把手教你从零开始安装、配置OpenClaw，连接WhatsApp、Telegram、Discord等聊天平台，打造一个真正属于你自己的AI助手。无需编程基础，跟着做就行。"
+canonical: "https://kunpeng-ai.com/blog/openclaw-getting-started"
+tags:
+  - OpenClaw
+  - 自托管
+  - AI助手
+  - 本地部署
+  - 隐私保护
+  - 多平台
+lang: zh-CN
+date: 2026-03-30T14:00:00
+whatYouLearn:
+  - "什么是OpenClaw，它和ChatGPT、Claude有什么区别"
+  - "在macOS、Linux、Windows上快速安装OpenClaw"
+  - "配置AI模型（OpenAI、Anthropic、Ollama等）"
+  - "连接WhatsApp、Telegram、Discord、飞书等聊天平台"
+  - "发送第一条消息，体验实时对话"
+  - "基础配置：自定义头像、昵称、系统提示词"
+keyTakeaways:
+  - "OpenClaw是自托管的，你的数据完全由你控制"
+  - "支持20+聊天平台，一个助手 everywhere"
+  - "安装只需5分钟，onboarding引导清晰"
+  - "可以随时切换AI模型，不绑定单一provider"
+---
+
+import { Image } from 'astro:assets';
+import coverImage from '../images/openclaw-getting-started-cover.png';
+
+<Image src={coverImage} alt="OpenClaw 入门指南封面" width={1200} height={630} />
+
+## 引言：为什么你需要一个OpenClaw？
+
+你有没有想过：一个AI助手，完全由你控制，想怎么用就怎么用，数据绝不外泄？
+
+OpenClaw就是这样的存在。它不是ChatGPT、不是Claude、不是文心一言，而是一个**你可以在自己电脑、服务器甚至树莓派上运行的AI网关**。
+
+### OpenClaw是什么？
+
+OpenClaw是一个自托管的网关（gateway），它连接你已经在用的聊天应用（WhatsApp、Telegram、Discord、微信、iMessage等）和AI模型（OpenAI GPT、Anthropic Claude、Google Gemini、本地Ollama等）。
+
+简单说：**你用熟悉的聊天App发消息，OpenClaw收到后调用AI，再把AI的回复发回给你。** 整个过程完全在你控制的环境中进行。
+
+### 为什么选OpenClaw而不是直接用ChatGPT？
+
+| 对比维度 | OpenClaw | ChatGPT/Claude云端版 |
+|---------|---------|---------------------|
+| **数据隐私** | ✅ 完全自控，数据不出你的设备 | ❌ 数据在第三方服务器 |
+| **多平台** | ✅ 20+平台同时在线 | ❌ 只能通过官方App或网页 |
+| **模型选择** | ✅ 任何provider都能接 | ❌ 只能使用 provider 自家模型 |
+| **成本** | ✅ 一次部署，持续使用 | ❌ 按月订阅或按token付费 |
+| **控制力** | ✅ 完全可定制、可扩展 | ❌ 功能固定，不能改 |
+| **可用性** | ✅ 24/7在线，不需要外网 | ❌ 依赖 provider 可用性 |
+
+如果你看重隐私、想要多平台统一体验、或者有定制化需求，OpenClaw值得尝试。
+
+---
+
+## 第一部分：快速安装（5分钟）
+
+OpenClaw支持所有主流操作系统。最简单的方式是使用官方安装脚本。
+
+### 系统要求
+
+- **Node.js**: 24.x 推荐（22.14+ 也可）
+- **内存**: 至少 2GB（运行模型需要更多）
+- **磁盘**: 至少 1GB 可用空间
+- **网络**: 能访问AI provider API（如果用本地模型则不需要）
+
+### macOS / Linux 安装
+
+打开终端，运行：
+
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash
+```
+
+这个脚本会自动：
+1. 检测你的系统
+2. 安装 Node.js（如果未安装）
+3. 安装 OpenClaw CLI
+4. 运行 `openclaw onboard` 引导配置
+
+### Windows 安装
+
+Windows 推荐使用 **WSL2**（更稳定），也可以原生安装。
+
+**方式一：WSL2（推荐）**
+
+1. 在 Microsoft Store 安装 Ubuntu
+2. 打开 WSL2 终端
+3. 运行同样的安装脚本：
+
+```bash
+curl -fsSL https://openclaw.ai/install.sh | bash
+```
+
+**方式二：PowerShell 原生**
+
+```powershell
+iwr -useb https://openclaw.ai/install.ps1 | iex
+```
+
+### 验证安装
+
+安装完成后，运行：
+
+```bash
+openclaw --version
+```
+
+应该看到类似输出：
+
+```
+OpenClaw 2026.3.24
+```
+
+---
+
+## 第二部分：Onboarding - 初始配置
+
+安装后，运行 onboarding 向导：
+
+```bash
+openclaw onboard --install-daemon
+```
+
+这会启动一个交互式向导，约2分钟完成。
+
+### Step 1: 选择模型 Provider
+
+OpenClaw支持多种AI provider：
+
+- **OpenAI** (ChatGPT, GPT-4, o1等)
+- **Anthropic** (Claude 3.5 Sonnet, Claude 3 Opus)
+- **Google** (Gemini Pro, Gemini Flash)
+- **Azure OpenAI**
+- **本地模型** (通过 Ollama, LM Studio, LocalAI)
+
+首次使用，推荐选 OpenAI 或 Anthropic（你需要有对应的 API key）。
+
+输入你的 API key，OpenClaw会保存到本地配置（存储在 `~/.openclaw/`）。
+
+### Step 2: 配置 Gateway Token
+
+Onboarding 会生成一个随机的 Gateway token，这是你的管理员凭证。**请妥善保存**。
+
+生成的 token 会写入 `.env` 文件（在 OpenClaw 工作目录）。
+
+### Step 3: 安装为系统服务（可选）
+
+`--install-daemon` 会把 OpenClaw Gateway 安装为系统服务（macOS launchd / Linux systemd / Windows Service），实现开机自启。
+
+如果不想安装为服务，去掉 `--install-daemon` 参数即可。
+
+### Step 4: 完成
+
+Onboarding 结束后，Gateway 会自动启动。
+
+验证 Gateway 状态：
+
+```bash
+openclaw g
+```
+
+或查看日志：
+
+```bash
+openclaw logs
+```
+
+看到类似 `Gateway is running on http://127.0.0.1:8080` 就表示成功了。
+
+---
+
+## 第三部分：连接你的第一个聊天平台
+
+OpenClaw支持20+聊天平台。我们来连一个最简单的：**Telegram**。
+
+### Telegram 机器人配置
+
+1. **打开 Telegram**，搜索 @BotFather
+2. 发送 `/newbot` 命令
+3. 按提示输入机器人名称和用户名（如 `MyOpenClawBot`）
+4. BotFather 会返回一个 **Bot Token**（如 `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`）
+
+### 在 OpenClaw 中配置 Telegram
+
+编辑 OpenClaw 配置：
+
+```bash
+openclaw config edit
+```
+
+在 `plugins` 部分添加 Telegram 配置：
+
+```json5
+{
+  plugins: {
+    telegram: {
+      botToken: "你的Bot Token",
+      // 可选：指定接收消息的chat ID
+      // allowedChats: ["你的用户ID"]
+    }
+  }
+}
+```
+
+保存并重启 Gateway：
+
+```bash
+openclaw restart
+```
+
+### 测试连接
+
+在 Telegram 中打开你的机器人，发送一条消息：
+
+```
+你好
+```
+
+如果一切正常，你会收到 AI 的回复！
+
+---
+
+## 其他平台快速配置
+
+### WhatsApp (需要 BlueBubbles)
+
+WhatsApp 不支持 Bot API，需要通过 BlueBubbles（macOS iMessage 服务器的 WhatsApp 适配层）间接连接。
+
+简要步骤：
+1. 在 Mac 上安装 BlueBubbles 服务端
+2. 在 OpenClaw 配置中启用 BlueBubbles 插件
+3. 扫码登录 WhatsApp Web
+4. 开始聊天
+
+详细：查看 [BlueBubbles 插件文档](/channels/bluebubbles)
+
+### Discord
+
+1. 去 [Discord Developer Portal](https://discord.com/developers/applications) 创建 Application
+2. 添加 Bot 用户，复制 Token
+3. 邀请 Bot 到你的服务器（需要 `bot` scope）
+4. OpenClaw 配置：
+
+```json5
+{
+  plugins: {
+    discord: {
+      token: "你的Discord Bot Token",
+      clientId: "你的Application ID",
+      // 可选：限制频道
+      // allowedChannels: ["频道ID"]
+    }
+  }
+}
+```
+
+### 飞书 (Feishu)
+
+飞书需要安装单独的插件：
+
+```bash
+openclaw plugins install feishu
+```
+
+然后在配置中填写：
+
+```json5
+{
+  plugins: {
+    feishu: {
+      appId: "你的飞书App ID",
+      appSecret: "你的飞书App Secret",
+      encryptionKey: "加密密钥（可选）"
+    }
+  }
+}
+```
+
+详细配置：查看 [Feishu 插件文档](/channels/feishu)
+
+### iMessage (macOS 原生)
+
+最简单的方式是使用 **BlueBubbles**（推荐），它支持 iMessage 的完整功能。
+
+老旧的 `imessage` 插件已废弃，不推荐新用户使用。
+
+---
+
+## 第四部分：发送第一条消息
+
+连接平台后，你可以通过任何已连接的聊天 App 给 OpenClaw 发消息。
+
+OpenClaw 会：
+1. 收到消息
+2. 根据配置选择 AI 模型
+3. 调用模型生成回复
+4. 把回复发回原平台
+
+### 试试这些开场白
+
+```
+你是谁？
+```
+
+```
+用中文介绍一下你自己
+```
+
+```
+写一个Python快速排序
+```
+
+```
+今天北京天气怎么样？
+```
+
+---
+
+## 第五部分：基础自定义
+
+OpenClaw 的行为可以通过配置调整。
+
+### 修改助手名称和头像
+
+编辑配置：
+
+```bash
+openclaw config edit
+```
+
+修改 `agent` 部分：
+
+```json5
+{
+  agent: {
+    name: "小鲲",  // 助手显示的名字
+    avatar: "https://example.com/avatar.png", // 头像URL
+    systemPrompt: "你是一个有用的AI助手，说话简洁明了。"
+  }
+}
+```
+
+### 设置系统提示词 (System Prompt)
+
+`systemPrompt` 决定了助手的性格和行为。
+
+示例：
+
+```json5
+{
+  agent: {
+    systemPrompt: `
+你是鲲鹏AI探索局的助手，专门帮助开发者解决AI相关技术问题。
+
+你的特点：
+- 回答简洁，不啰嗦
+- 提供可执行的代码示例
+- 遇到不确定的问题会说"我不确定"而不是瞎猜
+- 对技术问题保持专业，对闲聊可以轻松一点
+
+如果不清楚的问题，建议用户查阅官方文档或Stack Overflow。
+    `.trim()
+  }
+}
+```
+
+### 不同平台不同身份
+
+OpenClaw 支持为不同聊天平台设置不同的身份：
+
+```json5
+{
+  channels: {
+    telegram: {
+      agent: {
+        name: "Telegram助手",
+        systemPrompt: "你在Telegram上，回答要简短，适合手机阅读。"
+      }
+    },
+    discord: {
+      agent: {
+        name: "Discord机器人",
+        systemPrompt: "你在Discord服务器，可以适当使用emoji，语气活泼。"
+      }
+    }
+  }
+}
+```
+
+---
+
+## 第六部分：常用命令速查
+
+```bash
+# 查看状态
+openclaw status
+
+# 查看日志
+openclaw logs
+
+# 重启网关
+openclaw restart
+
+# 编辑配置
+openclaw config edit
+
+# 查看已安装插件
+openclaw plugins list
+
+# 安装新插件
+openclaw plugins install <插件名>
+
+# 移除插件
+openclaw plugins uninstall <插件名>
+
+# 直接向AI发送消息（不通过聊天平台）
+openclaw agent --message "你的消息"
+
+# 更新OpenClaw
+openclaw update
+
+# 运行健康检查
+openclaw doctor
+```
+
+---
+
+## 常见问题 (FAQ)
+
+### Q1: OpenClaw和Chatbot、Bot有什么区别？
+
+A: OpenClaw不是单个Bot，而是一个**网关**。它管理多个平台连接、AI provider、技能扩展。你可以把它理解为一个"AI助手的操作系统"。
+
+### Q2: 可以用本地模型吗？怎么连Ollama？
+
+A: 可以！在 onboarding 时选择 "Local (Ollama)" 或手动配置：
+
+```json5
+{
+  models: {
+    default: {
+      provider: "ollama",
+      model: "llama3.2:3b",
+      baseUrl: "http://localhost:11434"
+    }
+  }
+}
+```
+
+确保 Ollama 正在运行：`ollama serve`
+
+### Q3: 为什么消息延迟很高？
+
+可能原因：
+- AI provider 响应慢（如 OpenAI 高峰期）
+- 网络问题
+- 消息太长，模型生成本身就慢
+
+检查：`openclaw logs` 查看是否有错误。
+
+### Q4: 可以同时连多个平台吗？
+
+可以！OpenClaw 的设计就是一次部署，多平台同时在线。每个平台的配置独立管理。
+
+### Q5: 数据安全吗？
+
+OpenClaw 运行在你自己的设备上，所有消息、配置都存储在本地（`~/.openclaw/`）。只要你不选不靠谱的 provider，数据就不会流出你的控制范围。
+
+### Q6: 怎么备份和迁移？
+
+整个 OpenClaw 工作目录（默认 `~/.openclaw/`）就是你的全部配置。复制这个目录到新设备，重新安装 OpenClaw，把目录放回去即可。
+
+---
+
+## 下一步
+
+恭喜！你已经完成了 OpenClaw 的基本设置。现在你可以：
+
+1. **探索插件系统**：OpenClaw 有丰富的插件（浏览器自动化、文件操作、数据库查询等）
+2. **学习自动化**：用 cron jobs 做定时任务，用 heartbeat 做周期性检查
+3. **开发自定义技能**：用 JavaScript/TypeScript 写自己的工具
+4. **多设备部署**：把 Gateway 部署到树莓派、服务器，实现 24/7 在线
+
+---
+
+## 总结
+
+OpenClaw 给你一个完全可控的 AI 助手。它不像 ChatGPT 那样 locked in，而是像 Swiss Army knife 一样灵活。
+
+花5分钟安装，你就能在任何聊天 App 里拥有一个强大的 AI 伙伴。
+
+**现在就开始吧！** 🚀
+
+---
+
+## 延伸阅读
+
+- [OpenClaw 官方文档](https://docs.openclaw.ai)
+- [OpenClaw GitHub](https://github.com/openclaw/openclaw)
+- [OpenClaw Discord 社区](https://discord.gg/clawd)
+- [支持的平台列表](/channels/index)
+- [Cron Jobs 自动化](/automation/cron-jobs)
+- [技能开发指南](/cli/agent)
