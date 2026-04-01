@@ -1,16 +1,12 @@
 ---
 title: "OpenClaw Getting Started Guide: Build Your Personal AI Assistant in 5 Minutes"
 description: "A step-by-step guide to installing and configuring OpenClaw from scratch. Connect WhatsApp, Telegram, Discord, and more. Perfect for beginners."
-canonical: "https://kunpeng-ai.com/en/blog/openclaw-getting-started"
-tags:
-  - OpenClaw
-  - Self-hosted
-  - AI Assistant
-  - Local Deployment
-  - Privacy
-  - Multi-platform
-lang: en
-date: 2026-03-30T14:00:00
+date: "2026-03-30T14:00:00"
+author: "Kunpeng AI Explorer"
+category: "AI Agent"
+tags: ["OpenClaw", "Self-hosted", "AI Assistant", "Local Deployment", "Privacy", "Multi-platform"]
+image: "/images/blog/openclaw-getting-started-cover.png"
+lang: "en"
 whatYouLearn:
   - "What OpenClaw is and how it differs from ChatGPT/Claude"
   - "Install OpenClaw on macOS, Linux, or Windows in minutes"
@@ -25,22 +21,11 @@ keyTakeaways:
   - "Switch AI models anytime — no vendor lock-in"
 ---
 
-import { Image } from 'astro:assets';
-import coverImage from '../images/openclaw-getting-started-cover.png';
-
-<Image src={coverImage} alt="OpenClaw Getting Started Guide Cover" width={1200} height={630} />
-
 ## Introduction: Why You Need OpenClaw
 
 What if you could have an AI assistant that runs entirely on your own hardware, with complete control over your data, and works on all the chat apps you already use?
 
-That's OpenClaw.
-
-### What is OpenClaw?
-
-OpenClaw is a **self-hosted gateway** that bridges your favorite chat applications (WhatsApp, Telegram, Discord, WeChat, iMessage, etc.) with AI models (OpenAI GPT, Anthropic Claude, Google Gemini, local Ollama, and more).
-
-In plain English: **You send a message from your chat app → OpenClaw calls an AI → the AI's reply comes back to your chat app.** All on your infrastructure, your rules.
+That's OpenClaw — a **self-hosted gateway** that bridges your favorite chat applications with AI models.
 
 ### Why Choose OpenClaw Over ChatGPT or Claude?
 
@@ -51,452 +36,72 @@ In plain English: **You send a message from your chat app → OpenClaw calls an 
 | **Model Choice** | ✅ Any provider | ❌ Locked to provider's models |
 | **Cost** | ✅ One-time infra cost | ❌ Recurring subscription |
 | **Customization** | ✅ Fully extensible | ❌ Closed system |
-| **Availability** | ✅ 24/7, offline capable | ❌ Provider-dependent |
-
-If you value privacy, want a unified experience across platforms, or need customization — OpenClaw is for you.
 
 ---
 
 ## Part 1: Quick Install (5 Minutes)
 
-OpenClaw runs on all major OSes. The easiest way is the official install script.
-
-### System Requirements
-
-- **Node.js**: 24.x recommended (22.14+ works)
-- **RAM**: 2GB minimum (more for running models)
-- **Disk**: 1GB free space
-- **Network**: Access to AI provider APIs (not needed for local models)
-
-### macOS / Linux Install
-
-Open terminal and run:
+### macOS / Linux
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-The script will:
-1. Detect your system
-2. Install Node.js if missing
-3. Install OpenClaw CLI
-4. Run `openclaw onboard` to guide you through setup
-
-### Windows Install
-
-**Option 1: WSL2 (Recommended)**
-
-1. Install Ubuntu from Microsoft Store
-2. Open WSL2 terminal
-3. Run the same script:
-
-```bash
-curl -fsSL https://openclaw.ai/install.sh | bash
-```
-
-**Option 2: Native PowerShell**
+### Windows (PowerShell)
 
 ```powershell
 iwr -useb https://openclaw.ai/install.ps1 | iex
 ```
 
-### Verify Installation
-
-After install:
+### Verify
 
 ```bash
 openclaw --version
 ```
 
-You should see:
-
-```
-OpenClaw 2026.3.24
-```
-
 ---
 
-## Part 2: Onboarding — Initial Configuration
-
-Run the onboarding wizard:
+## Part 2: Onboarding
 
 ```bash
 openclaw onboard --install-daemon
 ```
 
-Interactive setup takes ~2 minutes.
-
-### Step 1: Choose AI Provider
-
-OpenClaw supports many AI providers:
-
-- **OpenAI** (ChatGPT, GPT-4, o1)
-- **Anthropic** (Claude 3.5 Sonnet, Claude 3 Opus)
-- **Google** (Gemini Pro, Gemini Flash)
-- **Azure OpenAI**
-- **Local models** (via Ollama, LM Studio, LocalAI)
-
-For first-time users, pick OpenAI or Anthropic (you'll need an API key).
-
-Enter your API key; OpenClaw stores it securely in `~/.openclaw/`.
-
-### Step 2: Gateway Token
-
-Onboarding generates a random Gateway token — your admin credential. **Keep it safe.**
-
-The token is written to `.env` in the OpenClaw working directory.
-
-### Step 3: Install as System Service (Optional)
-
-`--install-daemon` installs OpenClaw Gateway as a system service (macOS launchd / Linux systemd / Windows Service) for auto-start on boot.
-
-Skip `--install-daemon` if you prefer manual control.
-
-### Step 4: Done
-
-Onboarding auto-starts the Gateway.
-
-Check status:
-
-```bash
-openclaw g
-```
-
-Or view logs:
-
-```bash
-openclaw logs
-```
-
-Look for: `Gateway is running on http://127.0.0.1:8080`
+The interactive wizard takes ~2 minutes. Configure your AI provider API key and Gateway token.
 
 ---
 
-## Part 3: Connect Your First Chat Platform
+## Part 3: Connect Telegram
 
-OpenClaw supports 20+ chat platforms. Let's connect the simplest: **Telegram**.
-
-### Telegram Bot Setup
-
-1. Open Telegram, search for @BotFather
-2. Send `/newbot`
-3. Follow prompts: enter bot name & username
-4. BotFather returns a **Bot Token** (e.g., `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`)
-
-### Configure Telegram in OpenClaw
-
-Edit OpenClaw config:
+1. Chat with @BotFather on Telegram, send `/newbot`, copy the Bot Token
+2. Edit OpenClaw config:
 
 ```bash
 openclaw config edit
 ```
-
-Add Telegram plugin:
 
 ```json5
 {
   plugins: {
     telegram: {
-      botToken: "YOUR_BOT_TOKEN",
-      // optional: restrict to specific users
-      // allowedChats: ["your-user-id"]
+      botToken: "YOUR_BOT_TOKEN"
     }
   }
 }
 ```
 
-Restart Gateway:
+3. Restart: `openclaw restart`
+4. Message your bot — you should get an AI reply!
+
+---
+
+## Useful Commands
 
 ```bash
-openclaw restart
+openclaw status       # Check status
+openclaw logs         # View logs
+openclaw restart      # Restart gateway
+openclaw config edit  # Edit config
+openclaw update       # Update OpenClaw
+openclaw doctor       # Health check
 ```
-
-### Test It
-
-Open your bot in Telegram, send:
-
-```
-hello
-```
-
-You should get an AI reply!
-
----
-
-## Quick Setup for Other Platforms
-
-### WhatsApp (requires BlueBubbles)
-
-WhatsApp doesn't support Bot API directly. Use BlueBubbles (macOS iMessage server with WhatsApp adapter).
-
-Steps:
-1. Install BlueBubbles server on Mac
-2. Enable BlueBubbles plugin in OpenClaw
-3. Scan WhatsApp Web QR code
-4. Start chatting
-
-Details: [BlueBubbles plugin docs](/channels/bluebubbles)
-
-### Discord
-
-1. Go to [Discord Developer Portal](https://discord.com/developers/applications)
-2. Create Application → Add Bot → Copy Token
-3. Invite bot to your server (enable `bot` scope)
-4. OpenClaw config:
-
-```json5
-{
-  plugins: {
-    discord: {
-      token: "YOUR_DISCORD_BOT_TOKEN",
-      clientId: "YOUR_APPLICATION_ID",
-      // optional: restrict channels
-      // allowedChannels: ["channel-id"]
-    }
-  }
-}
-```
-
-### Feishu (Lark)
-
-Feishu requires separate plugin install:
-
-```bash
-openclaw plugins install feishu
-```
-
-Then configure:
-
-```json5
-{
-  plugins: {
-    feishu: {
-      appId: "YOUR_FEISHU_APP_ID",
-      appSecret: "YOUR_FEISHU_APP_SECRET",
-      encryptionKey: "optional-encryption-key"
-    }
-  }
-}
-```
-
-See: [Feishu plugin docs](/channels/feishu)
-
-### iMessage (macOS Native)
-
-Use **BlueBubbles** (recommended) for full iMessage features.
-
-Legacy `imessage` plugin is deprecated; avoid for new setups.
-
----
-
-## Part 4: Send Your First Message
-
-Once a platform is connected, just message your bot from that chat app.
-
-OpenClaw will:
-1. Receive the message
-2. Pick the configured AI model
-3. Call the model for a response
-4. Send reply back to the chat
-
-### Try These
-
-```
-Who are you?
-```
-
-```
-Introduce yourself in English
-```
-
-```
-Write a Python quicksort
-```
-
-```
-What's the weather in Beijing?
-```
-
----
-
-## Part 5: Basic Customization
-
-Customize OpenClaw behavior via config.
-
-### Change Name & Avatar
-
-```bash
-openclaw config edit
-```
-
-Modify `agent` section:
-
-```json5
-{
-  agent: {
-    name: "XiaoKun",  // assistant's display name
-    avatar: "https://example.com/avatar.png", // avatar URL
-    systemPrompt: "You are a helpful AI assistant. Be concise."
-  }
-}
-```
-
-### Set System Prompt
-
-`systemPrompt` shapes the assistant's personality.
-
-Example:
-
-```json5
-{
-  agent: {
-    systemPrompt: `
-You are Kunpeng AI's assistant, helping developers with AI/ML questions.
-
-Your style:
-- Concise, not verbose
-- Provide executable code examples
-- Say "I'm not sure" when uncertain
-- Be professional on technical topics, casual on small talk
-
-When unsure, point users to official docs or Stack Overflow.
-    `.trim()
-  }
-}
-```
-
-### Per-Channel Identity
-
-Give each platform its own persona:
-
-```json5
-{
-  channels: {
-    telegram: {
-      agent: {
-        name: "Telegram Assistant",
-        systemPrompt: "On Telegram — keep replies short, mobile-friendly."
-      }
-    },
-    discord: {
-      agent: {
-        name: "Discord Bot",
-        systemPrompt: "On Discord — feel free to use emoji, be lively."
-      }
-    }
-  }
-}
-```
-
----
-
-## Part 6: Useful Commands
-
-```bash
-# Status
-openclaw status
-
-# Logs
-openclaw logs
-
-# Restart gateway
-openclaw restart
-
-# Edit config
-openclaw config edit
-
-# List installed plugins
-openclaw plugins list
-
-# Install plugin
-openclaw plugins install <plugin-name>
-
-# Uninstall plugin
-openclaw plugins uninstall <plugin-name>
-
-# Send direct message to AI (bypass chat apps)
-openclaw agent --message "your message"
-
-# Update OpenClaw
-openclaw update
-
-# Health check
-openclaw doctor
-```
-
----
-
-## FAQ
-
-### Q1: How is OpenClaw different from a normal chatbot?
-
-A: OpenClaw isn't just a bot — it's a **gateway**. It manages multi-platform connections, AI providers, plugins, and automation. Think of it as an "OS for AI assistants."
-
-### Q2: Can I use local models? How to connect Ollama?
-
-A: Yes! During onboarding pick "Local (Ollama)" or configure manually:
-
-```json5
-{
-  models: {
-    default: {
-      provider: "ollama",
-      model: "llama3.2:3b",
-      baseUrl: "http://localhost:11434"
-    }
-  }
-}
-```
-
-Make sure Ollama is running: `ollama serve`
-
-### Q3: Why is my response slow?
-
-Causes:
-- Slow AI provider (OpenAI during peak hours)
-- Network latency
-- Long responses take longer to generate
-
-Check logs: `openclaw logs`
-
-### Q4: Can I connect multiple platforms at once?
-
-Yes! That's the point. Configure as many platforms as you need; OpenClaw handles them all simultaneously.
-
-### Q5: Is my data safe?
-
-OpenClaw runs on your machine. All messages and configs stay in `~/.openclaw/`. As long as you trust your AI provider, your data never leaves your control.
-
-### Q6: How to backup and migrate?
-
-The entire OpenClaw working directory (`~/.openclaw/`) contains all configs. Copy it to a new machine, reinstall OpenClaw, restore the directory — you're done.
-
----
-
-## Next Steps
-
-Congratulations! You now have a working OpenClaw instance. Next:
-
-1. **Explore plugins**: browser automation, file ops, database queries, and more
-2. **Automate with cron**: schedule tasks, periodic checks
-3. **Build custom tools**: write JavaScript/TypeScript skills
-4. **Multi-device deploy**: run Gateway on Raspberry Pi or a VPS for 24/7 uptime
-
----
-
-## Summary
-
-OpenClaw gives you a fully controllable AI assistant. Unlike locked-in cloud services, it's a flexible Swiss Army knife.
-
-**5-minute install → unlimited possibilities.** 🚀
-
----
-
-## Further Reading
-
-- [Official Docs](https://docs.openclaw.ai)
-- [GitHub Repository](https://github.com/openclaw/openclaw)
-- [Discord Community](https://discord.gg/clawd)
-- [Supported Platforms](/channels/index)
-- [Cron Automation](/automation/cron-jobs)
-- [Skills Development](/cli/agent)
