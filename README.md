@@ -19,6 +19,18 @@
   - 封面图与配图
   - 图片生成脚本
 
+### OpenClaw 错误处理与调试指南（openclaw-errors）
+- **目录**: `openclaw-errors/`
+- **博客**: https://kunpeng-ai.com/blog/openclaw-getting-started (相关章节)
+- **内容**:
+  - 常见错误排查
+  - 调试技巧
+  - 问题解决方案
+- **配套资源**:
+  - 各平台文章版本
+  - 配图资源
+  - 生成脚本
+
 ---
 
 ## 🗂️ 子项目结构
