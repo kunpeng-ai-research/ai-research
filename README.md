@@ -31,6 +31,21 @@
   - 配图资源
   - 生成脚本
 
+### OpenClaw PKM实战案例（openclaw-pkm-case）
+- **目录**: `openclaw-pkm-case/`
+- **博客**: https://kunpeng-ai.com/blog/openclaw-pkm-case (待发布)
+- **内容**:
+  - 用OpenClaw构建个人知识管理系统
+  - Feishu集成 + 记忆系统 + 自定义技能
+  - 完整代码示例（4个核心技能）
+  - 生产环境部署指南
+- **配套资源**:
+  - 中英文博客原文（MDX格式）
+  - 各平台适配版本（知乎/公众号/CSDN/Dev.to/小红书）
+  - 技能源码（summarize/tagify/daily-report/search）
+  - 配置文件示例 + 部署脚本
+  - 配图资源
+
 ---
 
 ## 🗂️ 子项目结构

@@ -1,0 +1,74 @@
+{
+  "gateway": {
+    "port": 8080,
+    "publicUrl": "https://your-domain.com"
+  },
+  "agent": {
+    "name": "PKM助手",
+    "systemPrompt": "你是个人知识管理助手，帮助用户管理、检索和总结知识。你会记住所有对话，并定期生成报告。",
+    "avatar": "https://example.com/pkm-avatar.png"
+  },
+  "models": {
+    "default": {
+      "provider": "ollama",
+      "model": "qwen2.5:7b",
+      "baseURL": "http://localhost:11434"
+    }
+  },
+  "plugins": {
+    "feishu": {
+      "appId": "YOUR_FEISHU_APP_ID",
+      "appSecret": "YOUR_FEISHU_APP_SECRET",
+      "encryptKey": "YOUR_ENCRYPT_KEY",
+      "eventVerificationToken": "YOUR_VERIFICATION_TOKEN"
+    },
+    "telegram": {
+      "botToken": "YOUR_TELEGRAM_BOT_TOKEN"
+    }
+  },
+  "memory": {
+    "enabled": true,
+    "provider": "sqlite",
+    "maxEntries": 10000,
+    "ttlDays": 30,
+    "autoSave": true
+  },
+  "skills": {
+    "enabled": ["summarize", "tagify", "daily-report", "search"],
+    "summarize": {
+      "maxLength": 100
+    },
+    "daily-report": {
+      "schedule": "0 9 * * *",
+      "targetChat": "your_feishu_chat_id"
+    }
+  },
+  "cron": {
+    "enabled": true,
+    "schedule": "0 9 * * *",
+    "task": "daily-report"
+  },
+  "heartbeat": {
+    "enabled": true,
+    "interval": 1800000, // 30分钟
+    "checks": [
+      "openclaw status",
+      "curl -f https://your-domain.com/api/plugins/feishu/events || echo 'Feishu webhook down'"
+    ]
+  },
+  "channels": {
+    "feishu": {
+      "agent": {
+        "name": "飞书PKM助手",
+        "systemPrompt": "在飞书中回复，使用中文，简洁明了。你会记住所有对话并生成每日报告。",
+        "avatar": "https://example.com/feishu-pkm-avatar.png"
+      }
+    },
+    "telegram": {
+      "agent": {
+        "name": "Telegram PKM Bot",
+        "systemPrompt": "On Telegram, keep replies short and mobile-friendly."
+      }
+    }
+  }
+}
